@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.Statement;
 
 public class RegistrationDAO {
     
@@ -25,9 +24,17 @@ public class RegistrationDAO {
             
             Connection conn = daoFactory.getConnection();
             
-            if (conn.isValid(0)) {
+            if (conn != null && conn.isValid(2)) {
+                int resolved = DAOUtility.resolveTermId(termid);
                 
-                // INSERT YOUR CODE HERE
+                String sql = "INSERT INTO registration (studentid, termid, crn) Values (?, ?, ?)";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, studentid);
+                ps.setInt(2, resolved);
+                ps.setInt(3, crn);
+                
+                result = (ps.executeUpdate() == 1);
+                
                 
             }
             
@@ -56,9 +63,17 @@ public class RegistrationDAO {
             
             Connection conn = daoFactory.getConnection();
             
-            if (conn.isValid(0)) {
+            if (conn != null && conn.isValid(2)) {
+                int resolved = DAOUtility.resolveTermId(termid);
                 
-                // INSERT YOUR CODE HERE
+                String sql = "DELETE FROM registration WHERE studentid=? AND termid=? AND crn=?";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, studentid);
+                ps.setInt(2, resolved);
+                ps.setInt(3, crn);
+                
+                result = (ps.executeUpdate() == 1);
+                
                 
             }
             
@@ -86,9 +101,17 @@ public class RegistrationDAO {
             
             Connection conn = daoFactory.getConnection();
             
-            if (conn.isValid(0)) {
+            if (conn != null && conn.isValid(2)) {
+                int resolved = DAOUtility.resolveTermId(termid);
                 
-                // INSERT YOUR CODE HERE
+                String sql = "DELETE FROM registration where studentid=? AND termid=?";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, studentid);
+                ps.setInt(2, resolved);
+                
+                ps.executeUpdate();
+                result = true;
+                
                 
             }
             
@@ -118,9 +141,22 @@ public class RegistrationDAO {
             
             Connection conn = daoFactory.getConnection();
             
-            if (conn.isValid(0)) {
+            if (conn != null && conn.isValid(2)) {
+                int resolved = DAOUtility.resolveTermId(termid);
                 
-                // INSERT YOUR CODE HERE
+                String sql = """
+                    SELECT studentid, termid, crn
+                    FROM registration
+                    where studentid=? AND termid=?
+                    ORDER BY crn
+                             """;
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, studentid);
+                ps.setInt(2, resolved);
+                
+                rs = ps.executeQuery();
+                result = DAOUtility.getResultSetAsJson(rs);
+                
                 
             }
             
